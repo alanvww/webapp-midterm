@@ -1,9 +1,13 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router';
 import axios from 'axios';
 import WeatherCard from '../components/WeatherCard';
-import { API_KEY } from '../components/API_KEY';
+import 'mapbox-gl/dist/mapbox-gl.css';
+import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
+import { WEATHER_API_KEY, MAPBOX_API_KEY } from '../components/API_KEY';
 import WeatherImage from '../components/WeatherImage';
+
+mapboxgl.accessToken = MAPBOX_API_KEY;
 
 // URL Search Params... localhost:3000/?city=paris
 //abstract away URL Search Params here to make it easier to use
@@ -12,16 +16,47 @@ function useQuery() {
 }
 
 function Home() {
+	const mapContainer = useRef(null);
+	const map = useRef(null);
+	const [zoom, setZoom] = useState(9);
+
+	useEffect(() => {
+		if (map.current) return;
+		// initialize map only once
+		if (weatherData) {
+			map.current = new mapboxgl.Map({
+				container: mapContainer.current,
+				style: 'mapbox://styles/mapbox/light-v10',
+				center: [weatherData.coord.lon, weatherData.coord.lat],
+				zoom: zoom,
+			});
+		}
+	});
+
+	/*
+	useEffect(() => {
+		if (!map.current || !weatherData) return; // wait for map to initialize
+		map.current.on('move', () => {
+			setLng(weatherData.coord.lon);
+			setLat(weatherData.coord.lat);
+			setZoom(map.current.getZoom().toFixed(2));
+		});
+	}); */
+
 	const [city, setCity] = useState();
 	const [weatherData, setWeatherData] = useState();
 
 	let query = useQuery();
 
-	const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}`;
+	const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}`;
 
 	useEffect(() => {
-		const cityValue = query.get('city');
-		setCity(cityValue);
+		if (query.get('city')) {
+			const cityValue = query.get('city');
+			setCity(cityValue);
+		} else {
+			setCity('osaka');
+		}
 	}, [query]);
 
 	useEffect(() => {
@@ -51,6 +86,8 @@ function Home() {
 		weatherDescription,
 		weatherType,
 		windSpeed,
+		weahterLng,
+		weatherLat,
 	} = useMemo(() => {
 		// This is where we process data
 		if (!weatherData) return {};
@@ -63,6 +100,8 @@ function Home() {
 			weatherDescription: weatherData.weather[0].description,
 			weatherType: weatherData.weather[0].main,
 			windSpeed: weatherData.wind.speed,
+			weahterLng: weatherData.coord.lon,
+			weatherLat: weatherData.coord.lat,
 		};
 	}, [weatherData]);
 
@@ -134,6 +173,9 @@ function Home() {
 				>
 					<WeatherImage weatherType={weatherType} />
 				</section>
+				<div>
+					<div ref={mapContainer} className="map-container" />
+				</div>
 			</header>
 			<WeatherCard
 				cloudiness={cloudiness}
