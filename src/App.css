@@ -1,0 +1,168 @@
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.App {
+	color: white;
+	margin: 0 auto;
+	max-width: 1080px;
+	padding: 0 25px;
+}
+
+body {
+	animation: gradient 15s ease infinite;
+	background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+	background-size: 400% 400%;
+}
+
+.cityList {
+	display: flex;
+	list-style-type: none;
+	margin: 0;
+	overflow: hidden;
+	padding: 20px 0;
+}
+
+.cityList li {
+	float: left;
+}
+
+.cityList li a {
+	background-color: #ffffff00;
+	color: white;
+	display: inline;
+	font-size: large;
+	font-weight: normal;
+	mix-blend-mode: overlay;
+	padding: 8px;
+	text-decoration: none;
+}
+
+.cityList li a:visited {
+	color: white;
+}
+
+.cityList li a.Active {
+	font-weight: bold;
+	mix-blend-mode: normal;
+}
+
+.cityList li a:hover {
+	background-color: #2e2e2e;
+	border: none 1px;
+	border-radius: 20px;
+	mix-blend-mode: color-dodge;
+}
+
+.Location {
+	display: inline-flex;
+	font-size: 80px;
+	font-weight: bold;
+	margin: 10px;
+	padding-left: 20px;
+	text-align: left;
+	text-transform: capitalize;
+}
+
+.container {
+	align-items: auto;
+	align-content: space-between;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	justify-content: space-around;
+}
+
+.item {
+	backdrop-filter: blur(10px);
+	background: rgba(199, 199, 199, 0.15);
+	border: none 1px;
+	border-radius: 30px;
+	flex: 1 1 auto;
+	margin: 10px;
+	padding: 30px;
+	padding-top: 15px;
+}
+
+.item h2 {
+	font-weight: normal;
+	text-transform: uppercase;
+}
+
+.highlightedData {
+	font-size: 50px;
+}
+
+.WeatherIcon {
+	align-items: right;
+	display: inline-flex;
+	float: right;
+	font-size: 100px;
+	justify-content: right;
+	padding: 0 25px;
+}
+
+footer {
+	bottom: 0;
+	color: white;
+	text-align: center;
+}
+
+footer > a {
+	color: #00fddb;
+	font-weight: 500;
+	mix-blend-mode: overlay;
+	text-decoration: none;
+}
+
+@media (max-width: 800px) {
+	/*
+		General rule:
+			so long as the min-width of the browser windows > value: desktop style
+
+			so long as the max-width of the browser windows > value: mobile style
+
+	*/
+
+	.Location {
+		align-items: left;
+		display: flex;
+		font-size: 80px;
+		justify-content: center;
+		margin-top: 0px;
+		padding-left: 0px;
+	}
+
+	.cityList {
+	}
+
+	.cityList li a {
+		font-size: 15px;
+	}
+
+	.cityList li {
+	}
+
+	.WeatherIcon {
+		align-items: left;
+		display: flex;
+		float: none;
+		font-size: 20vmax;
+		justify-content: center;
+		margin-top: 0px;
+		margin: 5%;
+		padding: auto;
+	}
+
+	footer {
+		margin: 5%;
+	}
+}
