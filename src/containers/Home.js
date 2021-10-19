@@ -27,7 +27,7 @@ function Home() {
 			map.current = new mapboxgl.Map({
 				container: mapContainer.current,
 				style: 'mapbox://styles/mapbox/light-v10',
-				center: [weatherData.coord.lon, weatherData.coord.lat],
+				center: [weatherLng, weatherLat],
 				zoom: zoom,
 			});
 		}
@@ -44,20 +44,33 @@ function Home() {
 	}); */
 
 	const [city, setCity] = useState();
+	const [lng, setLng] = useState();
+	const [lat, setLat] = useState();
 	const [weatherData, setWeatherData] = useState();
 
 	let query = useQuery();
 
 	const URL = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}`;
+	const GEO_URL = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${WEATHER_API_KEY}`;
 
 	useEffect(() => {
 		if (query.get('city')) {
 			const cityValue = query.get('city');
 			setCity(cityValue);
 		} else {
-			setCity('osaka');
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(showPosition);
+			} else {
+				setCity('osaka');
+				console.log('Geolocation is not supported by this browser.');
+			}
 		}
 	}, [query]);
+
+	function showPosition(geo_location) {
+		setLng(geo_location.coords.longitude);
+		setLat(geo_location.coords.latitude);
+	}
 
 	useEffect(() => {
 		// Get weather data from weather API
@@ -74,8 +87,20 @@ function Home() {
 					// handle error
 					console.log(error);
 				});
+		} else {
+			axios
+				.get(GEO_URL)
+				.then(function (response) {
+					// handle success
+					setWeatherData(response.data);
+					console.log(response);
+				})
+				.catch(function (error) {
+					// handle error
+					console.log(error);
+				});
 		}
-	}, [URL, city]);
+	}, [GEO_URL, URL, city]);
 
 	const {
 		cloudiness,
@@ -86,8 +111,9 @@ function Home() {
 		weatherDescription,
 		weatherType,
 		windSpeed,
-		weahterLng,
+		weatherLng,
 		weatherLat,
+		currentCity,
 	} = useMemo(() => {
 		// This is where we process data
 		if (!weatherData) return {};
@@ -100,8 +126,9 @@ function Home() {
 			weatherDescription: weatherData.weather[0].description,
 			weatherType: weatherData.weather[0].main,
 			windSpeed: weatherData.wind.speed,
-			weahterLng: weatherData.coord.lon,
+			weatherLng: weatherData.coord.lon,
 			weatherLat: weatherData.coord.lat,
+			currentCity: weatherData.name,
 		};
 	}, [weatherData]);
 
@@ -117,6 +144,11 @@ function Home() {
 			<header>
 				<nav>
 					<ul className="cityList">
+						<li>
+							<a href="/" className={city === currentCity && 'Active'}>
+								Current Location
+							</a>
+						</li>
 						<li>
 							<a href="/?city=osaka" className={city === 'osaka' && 'Active'}>
 								Osaka
@@ -161,7 +193,7 @@ function Home() {
 						})`,
 					}}
 				>
-					{city}
+					{currentCity}
 				</h1>
 				<section
 					className="WeatherIcon"
