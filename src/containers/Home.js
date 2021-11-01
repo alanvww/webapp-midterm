@@ -18,7 +18,6 @@ function useQuery() {
 function Home() {
 	const mapContainer = useRef(null);
 	const map = useRef(null);
-	const [zoom, setZoom] = useState(9);
 
 	useEffect(() => {
 		if (map.current) return;
@@ -28,20 +27,10 @@ function Home() {
 				container: mapContainer.current,
 				style: 'mapbox://styles/mapbox/light-v10',
 				center: [weatherLng, weatherLat],
-				zoom: zoom,
+				zoom: 10,
 			});
 		}
 	});
-
-	/*
-	useEffect(() => {
-		if (!map.current || !weatherData) return; // wait for map to initialize
-		map.current.on('move', () => {
-			setLng(weatherData.coord.lon);
-			setLat(weatherData.coord.lat);
-			setZoom(map.current.getZoom().toFixed(2));
-		});
-	}); */
 
 	const [city, setCity] = useState();
 	const [lng, setLng] = useState();
@@ -58,6 +47,7 @@ function Home() {
 			const cityValue = query.get('city');
 			setCity(cityValue);
 		} else {
+			// Check HTML Location API
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(showPosition);
 			} else {
@@ -67,6 +57,7 @@ function Home() {
 		}
 	}, [query]);
 
+	// Set Lng & Lat
 	function showPosition(geo_location) {
 		setLng(geo_location.coords.longitude);
 		setLat(geo_location.coords.latitude);
@@ -93,6 +84,7 @@ function Home() {
 				.then(function (response) {
 					// handle success
 					setWeatherData(response.data);
+					setCity(weatherData.name);
 					console.log(response);
 				})
 				.catch(function (error) {
@@ -132,6 +124,7 @@ function Home() {
 		};
 	}, [weatherData]);
 
+	// footer copyright
 	if (document.getElementById('copyright')) {
 		const copyright =
 			`Made by <a href="mailto:alan.ren@pm.me">@Alan Ren</a> &copy;` +
@@ -145,7 +138,7 @@ function Home() {
 				<nav>
 					<ul className="cityList">
 						<li>
-							<a href="/" className={city === currentCity && 'Active'}>
+							<a href="/" className={!city && 'Active'}>
 								Current Location
 							</a>
 						</li>
@@ -171,14 +164,14 @@ function Home() {
 							</a>
 						</li>
 						<li>
-							<a href="/?city=London" className={city === 'London' && 'Active'}>
+							<a href="/?city=london" className={city === 'london' && 'Active'}>
 								London
 							</a>
 						</li>
 						<li>
 							<a
-								href="/?city=Chengdu"
-								className={city === 'Chengdu' && 'Active'}
+								href="/?city=chengdu"
+								className={city === 'chengdu' && 'Active'}
 							>
 								Chengdu
 							</a>

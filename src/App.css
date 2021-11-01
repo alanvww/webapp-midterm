@@ -19,7 +19,11 @@
 
 body {
 	animation: gradient 30s ease infinite;
-	background: radial-gradient(#e66465, #9198e5);
+	background: radial-gradient(
+		circle,
+		rgba(238, 174, 202, 1) 0%,
+		rgba(148, 187, 233, 1) 100%
+	);
 	background-size: 400% 400%;
 }
 
@@ -102,8 +106,10 @@ body {
 }
 
 .item {
-	backdrop-filter: blur(10px);
-	background: rgba(199, 199, 199, 0.15);
+	backdrop-filter: blur(5px);
+	backdrop-filter: opacity(20%);
+	backdrop-filter: drop-shadow(4px 4px 10px grey);
+	background: rgba(221, 221, 221, 0.301);
 	border: none 1px;
 	border-radius: 30px;
 	flex: 1 1 auto;
@@ -155,13 +161,24 @@ footer > a {
 	.Location {
 		align-items: left;
 		display: flex;
-		font-size: 80px;
+		font-size: 55px;
 		justify-content: center;
 		margin-top: 0px;
 		padding-left: 0px;
 	}
 
+	.cityList {
+		display: block; /* Make the links appear below each other */
+	}
+
+	.cityList li {
+		overflow-y: auto;
+	}
 	.cityList li a {
+		display: block;
+		float: none;
+		position: relative;
+		width: 200px;
 		font-size: 15px;
 	}
 
